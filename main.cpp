@@ -8,17 +8,15 @@
 
 #include <iostream>
 
-struct Node
-{
-    int data;
-    struct Node *next;
-};
-
 class Linked_List
 {
     private:
+        struct Node
+        {
+            int data;
+            struct Node *next;
+        } *head, *tail, *temp;
         int length;
-        struct Node *head, *tail, *temp;
     public:
         Linked_List()
         {
@@ -29,14 +27,14 @@ class Linked_List
         }
         void create (int A[], int n)
         {
-            head = (struct Node *)malloc(sizeof(struct Node));
+            head = new struct Node;
             head->data = A[0];
             head->next = NULL;
             tail = head;
             length++;
             for (int i = 1; i < n; i++)
             {
-                temp = (struct Node *)malloc(sizeof(struct Node));
+                temp = new struct Node;
                 temp->data = A[i];
                 temp->next = NULL;
                 tail->next = temp;
@@ -45,9 +43,9 @@ class Linked_List
             }
             return;
         }
-        void push (int n) /// add element at the end of linked list
+        void push (int n) // add element at the end of linked list
         {
-            temp = (struct Node *)malloc(sizeof(struct Node));
+            temp = new struct Node;
             temp->data = n;
             temp->next = NULL;
             if (head == NULL)
@@ -56,7 +54,7 @@ class Linked_List
             }
             else
             {
-                tail = (struct Node *)malloc(sizeof(struct Node));
+                tail = new struct Node;
                 tail = head;
                 while (tail->next != NULL)
                 {
@@ -67,9 +65,9 @@ class Linked_List
             length++;
             return;
         }
-        void unshift (int n) /// add element at the beginning of linked list
+        void unshift (int n) // add element at the beginning of linked list
         {
-            temp = (struct Node *)malloc(sizeof(struct Node));
+            temp = new struct Node;
             temp->data = n;
             temp->next = NULL;
             if (head == NULL)
@@ -84,11 +82,11 @@ class Linked_List
             length++;
             return;
         }
-        void insert (int i, int n) /// add element at certain index
+        void insert (int i, int n) // add element at certain index
         {
             if (i < 0 && i > length)
                 return;
-            temp = (struct Node *)malloc(sizeof(struct Node));
+            temp = new struct Node;
             temp->data = n;
             temp->next = NULL;
             if (i == 0)
@@ -110,7 +108,7 @@ class Linked_List
             length++;
             return;
         }
-        void edit (int i, int n) /// edit element at certain index
+        void edit (int i, int n) // edit element at certain index
         {
             if (head == NULL || (i < 0 && i > length))
                 return;
@@ -127,7 +125,7 @@ class Linked_List
                 return;
             else if (head->next == NULL )
             {
-                free(head);
+                delete head;
                 head = NULL;
             }
             else
@@ -136,14 +134,14 @@ class Linked_List
                 while (tail->next && tail->next->next != NULL) {
                     tail = tail->next;
                 }
-                free(tail->next);
+                delete tail->next;
                 tail->next = NULL;
             }
             length--;
             return;
             
         }
-        void shift () /// remove element at the beginning of linked list
+        void shift () // remove element at the beginning of linked list
         {
             if (head == NULL)
                 return;
@@ -151,12 +149,12 @@ class Linked_List
             {
                 temp = head;
                 head = head->next;
-                free(temp);
+                delete temp;
             }
             length--;
             return;
         }
-        void remove (int i) /// remove element at certain index
+        void remove (int i) // remove element at certain index
         {
             if (head == NULL || (i < 0 && i > length))
                 return;
@@ -164,7 +162,7 @@ class Linked_List
             {
                 temp = head;
                 head = head->next;
-                free(temp);
+                delete temp;
             }
             else
             {
@@ -174,19 +172,19 @@ class Linked_List
                 }
                 temp = tail->next;
                 tail->next = temp->next;
-                free(temp);
+                delete temp;
                 temp = NULL;
             }
             length--;
             return;
         }
-        void deleteList() /// delete whole linked list
+        void deleteList() // delete whole linked list
         {
             tail = head;
             while (tail != NULL)
             {
                 temp = tail->next;
-                free(tail);
+                delete tail;
                 tail = temp;
                 length--;
             }
@@ -196,10 +194,17 @@ class Linked_List
         }
         void display ()
         {
-            struct Node *p = head;
-            while (p != NULL) {
-                printf("%d\n", p->data);
-                p = p->next;
+            if (head != NULL)
+            {
+                tail = head;
+                while (tail != NULL) {
+                    printf("%d\n", tail->data);
+                    tail = tail->next;
+                }
+            }
+            else
+            {
+                printf("the linked list is empty\n");
             }
             return;
         }
@@ -231,9 +236,10 @@ int main(int argc, const char * argv[]) {
     a.display();
     printf("len: %d\n\n", a.len());
     Linked_List b;
-    int C[] = {3, 5, 7, 10, 15, 12};
+    int C[] = { 3, 5, 7, 10, 15, 12 };
     b.create(C, 6);
     b.push(14);
+    b.push(18);
     b.display();
     printf("\n");
     printf("len: %d\n\n", b.len());
