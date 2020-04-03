@@ -1,8 +1,8 @@
 //
 //  main.cpp
-//  togo
+//  brand_new
 //
-//  Created by Mikołaj Semeniuk on 30/03/2020.
+//  Created by Mikołaj Semeniuk on 03/04/2020.
 //  Copyright © 2020 Mikołaj Semeniuk. All rights reserved.
 //
 
@@ -26,6 +26,24 @@ class Linked_List
             head = NULL;
             tail = NULL;
             temp = NULL;
+        }
+        void create (int A[], int n)
+        {
+            head = (struct Node *)malloc(sizeof(struct Node));
+            head->data = A[0];
+            head->next = NULL;
+            tail = head;
+            length++;
+            for (int i = 1; i < n; i++)
+            {
+                temp = (struct Node *)malloc(sizeof(struct Node));
+                temp->data = A[i];
+                temp->next = NULL;
+                tail->next = temp;
+                tail = temp;
+                length++;
+            }
+            return;
         }
         void push (int n) /// add element at the end of linked list
         {
@@ -162,6 +180,20 @@ class Linked_List
             length--;
             return;
         }
+        void deleteList() /// delete whole linked list
+        {
+            tail = head;
+            while (tail != NULL)
+            {
+                temp = tail->next;
+                free(tail);
+                tail = temp;
+                length--;
+            }
+            head = NULL;
+            tail = NULL;
+            temp = NULL;
+        }
         void display ()
         {
             struct Node *p = head;
@@ -177,12 +209,7 @@ class Linked_List
         }
         ~Linked_List()
         {
-            delete head;
-            delete tail; // could generate error in xcode becuase of xcode bug
-            delete temp; // could generate error in xcode becuase of xcode bug
-            head = NULL;
-            tail = NULL;
-            temp = NULL;
+            deleteList();
             length = NULL;
         }
 };
@@ -200,5 +227,15 @@ int main(int argc, const char * argv[]) {
     a.shift();
     a.display();
     printf("len: %d\n", a.len());
+    a.deleteList();
+    a.display();
+    printf("len: %d\n\n", a.len());
+    Linked_List b;
+    int C[] = {3, 5, 7, 10, 15, 12};
+    b.create(C, 6);
+    b.push(14);
+    b.display();
+    printf("\n");
+    printf("len: %d\n\n", b.len());
     return 0;
 }
