@@ -26,12 +26,29 @@ class Linked_List
             tail = NULL;
             temp = NULL;
         }
+        Linked_List(T A[], int n)
+        {
+            head = new struct Node;
+            head->data = A[0];
+            head->next = NULL;
+            tail = head;
+            length = 1;
+            for (int i = 1; i < n; i++)
+            {
+                temp = new struct Node;
+                temp->data = A[i];
+                temp->next = NULL;
+                tail->next = temp;
+                tail = temp;
+                length++;
+            }
+            return;
+        }
         ~Linked_List()
         {
             deleteList();
             length = NULL;
         }
-        void create (T A[], int n); // create list and initialize elements
         void push (T n); // add element at the end of linked list
         void unshift (T n); // add element at the beginning of linked list
         void insert (int i, T n); // add element at certain index
@@ -40,29 +57,13 @@ class Linked_List
         void shift (); // remove element at the beginning of linked list
         void remove (int i); // remove element at certain index
         void deleteList(); // delete whole linked list
+        void swap(struct Node *p, struct Node *q); // swap elements of linked list
+        void sortPositive(); // sort linked list from lowest to higher
+        void sortNegative(); // sort linked list from higher to lowest
         void display (); // show all elements of list
         int len (); // return length of list
 };
 
-template<class T>
-void Linked_List<T>::create (T A[], int n)
-{
-    head = new struct Node;
-    head->data = A[0];
-    head->next = NULL;
-    tail = head;
-    length++;
-    for (int i = 1; i < n; i++)
-    {
-        temp = new struct Node;
-        temp->data = A[i];
-        temp->next = NULL;
-        tail->next = temp;
-        tail = temp;
-        length++;
-    }
-    return;
-}
 template<class T>
 void Linked_List<T>::push (T n)
 {
@@ -221,6 +222,53 @@ void Linked_List<T>::deleteList()
     temp = NULL;
 }
 template<class T>
+void Linked_List<T>::swap (struct Node *p, struct Node *q)
+{
+    T temp = p->data;
+    p->data = q -> data;
+    q -> data = temp;
+}
+template<class T>
+void Linked_List<T>::sortPositive ()
+{
+    bool swapped;
+    tail = NULL;
+    
+    do {
+        swapped = false;
+        tail = head;
+        while(tail->next != NULL)
+        {
+            if (tail->data > tail->next->data)
+            {
+                swap(tail, tail->next);
+                swapped = true;
+            }
+            tail = tail->next;
+        }
+    } while(swapped);
+}
+template<class T>
+void Linked_List<T>::sortNegative ()
+{
+    bool swapped;
+    tail = NULL;
+    
+    do {
+        swapped = false;
+        tail = head;
+        while(tail->next != NULL)
+        {
+            if (tail->data < tail->next->data)
+            {
+                swap(tail, tail->next);
+                swapped = true;
+            }
+            tail = tail->next;
+        }
+    } while(swapped);
+}
+template<class T>
 void Linked_List<T>::display ()
 {
     if (head != NULL)
@@ -243,6 +291,20 @@ int Linked_List<T>::len ()
     return length;
 }
 
+/*
+    Example of using our object in function
+*/
+template<class T>
+void next(Linked_List<T> &object) {
+    object.push("string from next");
+}
+template<class T>
+void init(Linked_List<T> &object) {
+    object.push("string from init");
+    next(object);
+}
+
+// main
 int main(int argc, const char * argv[]) {
     // insert code here...
     Linked_List<int> a; // Integers
@@ -254,28 +316,29 @@ int main(int argc, const char * argv[]) {
     a.edit(1, 99);
     a.remove(2);
     a.shift();
+    a.sortNegative();
     a.display();
     printf("len: %d\n", a.len());
     a.deleteList();
     a.display();
     printf("len: %d\n\n", a.len());
-    Linked_List<double> b; // Doubles
     double E[] = { 3.6, 5.4, 7.2, 10.10, 15.2, 12.19 };
-    b.create(E, 6);
+    Linked_List<double> b(E, 6); // Doubles
     b.push(14);
     b.push(18);
+    b.sortPositive();
     b.display();
     printf("\n");
     printf("len: %d\n\n", b.len());
-    Linked_List<char> c; // Chars
     char F[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
-    c.create(F, 6);
+    Linked_List<char> c(F, 6); // Chars
     c.pop();
     c.display();
-    Linked_List<std::string> d; // Strings
+    printf("len: %d\n\n", c.len());
     std::string G[] = { "hello", "there", "from", "linked", "list", "of", "strings" };
-    d.create(G, 7);
+    Linked_List<std::string> d(G, 7); // Strings
     d.push("new string");
+    init(d);
     d.display();
     return 0;
 }
