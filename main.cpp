@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-template<class T>
+template <class T>
 class Linked_List
 {
     private:
@@ -49,22 +49,34 @@ class Linked_List
             deleteList();
             length = NULL;
         }
+        
         void push (T n); // add element at the end of linked list
         void unshift (T n); // add element at the beginning of linked list
         void insert (int i, T n); // add element at certain index
+        
         void edit (int i, T n); // edit element at certain index
+        
         void pop (); // remove element at the end of linked list
         void shift (); // remove element at the beginning of linked list
         void remove (int i); // remove element at certain index
+        
         void deleteList(); // delete whole linked list
+        
         void swap(struct Node *p, struct Node *q); // swap elements of linked list
-        void sortPositive(); // sort linked list from lowest to higher
-        void sortNegative(); // sort linked list from higher to lowest
+        void sortB(); // bubble sort
+        
+        void sort(); // the main wrapper for merge sort
+        void MergeSort(Node** headRef);
+        void FrontBackSplit(Node* source, Node** frontRef, Node** backRef);
+        struct Node* SortedMerge(Node* a, Node* b);
+        
+        void reverse (); // reverse a linked list
         void display (); // show all elements of list
         int len (); // return length of list
+        
 };
 
-template<class T>
+template <class T>
 void Linked_List<T>::push (T n)
 {
     temp = new struct Node;
@@ -87,7 +99,7 @@ void Linked_List<T>::push (T n)
     length++;
     return;
 }
-template<class T>
+template <class T>
 void Linked_List<T>::unshift (T n)
 {
     temp = new struct Node;
@@ -105,7 +117,7 @@ void Linked_List<T>::unshift (T n)
     length++;
     return;
 }
-template<class T>
+template <class T>
 void Linked_List<T>::insert (int i, T n)
 {
     if (i < 0 && i > length)
@@ -132,7 +144,7 @@ void Linked_List<T>::insert (int i, T n)
     length++;
     return;
 }
-template<class T>
+template <class T>
 void Linked_List<T>::edit (int i, T n)
 {
     if (head == NULL || (i < 0 && i > length))
@@ -144,7 +156,7 @@ void Linked_List<T>::edit (int i, T n)
     tail->data = n;
     return;
 }
-template<class T>
+template <class T>
 void Linked_List<T>::pop ()
 {
     if (head == NULL)
@@ -167,7 +179,7 @@ void Linked_List<T>::pop ()
     return;
     
 }
-template<class T>
+template <class T>
 void Linked_List<T>::shift ()
 {
     if (head == NULL)
@@ -181,7 +193,7 @@ void Linked_List<T>::shift ()
     length--;
     return;
 }
-template<class T>
+template <class T>
 void Linked_List<T>::remove (int i)
 {
     if (head == NULL || (i < 0 && i > length))
@@ -206,7 +218,7 @@ void Linked_List<T>::remove (int i)
     length--;
     return;
 }
-template<class T>
+template <class T>
 void Linked_List<T>::deleteList()
 {
     tail = head;
@@ -221,15 +233,15 @@ void Linked_List<T>::deleteList()
     tail = NULL;
     temp = NULL;
 }
-template<class T>
+template <class T>
 void Linked_List<T>::swap (struct Node *p, struct Node *q)
 {
     T temp = p->data;
     p->data = q -> data;
     q -> data = temp;
 }
-template<class T>
-void Linked_List<T>::sortPositive ()
+template <class T>
+void Linked_List<T>::sortB ()
 {
     bool swapped;
     tail = NULL;
@@ -248,27 +260,94 @@ void Linked_List<T>::sortPositive ()
         }
     } while(swapped);
 }
-template<class T>
-void Linked_List<T>::sortNegative ()
+template <class T>
+void Linked_List<T>::sort ()
 {
-    bool swapped;
-    tail = NULL;
-    
-    do {
-        swapped = false;
-        tail = head;
-        while(tail->next != NULL)
-        {
-            if (tail->data < tail->next->data)
-            {
-                swap(tail, tail->next);
-                swapped = true;
-            }
-            tail = tail->next;
-        }
-    } while(swapped);
+    MergeSort(&head);
 }
-template<class T>
+template <class T>
+void Linked_List<T>::MergeSort (Node** headRef)
+{
+    Node* head = *headRef;
+    Node* a;
+    Node* b;
+
+    if ((head == NULL) || (head->next == NULL)) {
+        return;
+    }
+
+    FrontBackSplit(head, &a, &b);
+
+    MergeSort(&a);
+    MergeSort(&b);
+
+    *headRef = SortedMerge(a, b);
+}
+template <class T>
+void Linked_List<T>::FrontBackSplit (Node* source, Node** frontRef, Node** backRef)
+{
+    Node* fast;
+    Node* slow;
+    slow = source;
+    fast = source->next;
+  
+    while (fast != NULL) {
+        fast = fast->next;
+        if (fast != NULL) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+  
+    *frontRef = source;
+    *backRef = slow->next;
+    slow->next = NULL;
+}
+template <class T>
+typename Linked_List<T>::Node* Linked_List<T>::SortedMerge (Node* a, Node* b)
+{
+    Node* result = NULL;
+    
+    if (a == NULL)
+        return (b);
+    else if (b == NULL)
+        return (a);
+
+    if (a->data <= b->data) {
+        result = a;
+        result->next = SortedMerge(a->next, b);
+    }
+    else {
+        result = b;
+        result->next = SortedMerge(a, b->next);
+    }
+    return (result);
+}
+template <class T>
+void Linked_List<T>::reverse ()
+{
+    T *A,i=0;
+    tail = head;
+    
+    A = (T *)malloc(sizeof(T)* len());
+    while(tail != NULL)
+    {
+        A[i] = tail->data;
+        tail = tail->next;
+        i++;
+    }
+    tail = head;
+    i--;
+    
+    while(tail != NULL)
+    {
+        tail->data = A[i];
+        tail = tail->next;
+        i--;
+    }
+    return;
+}
+template <class T>
 void Linked_List<T>::display ()
 {
     if (head != NULL)
@@ -285,7 +364,7 @@ void Linked_List<T>::display ()
     }
     return;
 }
-template<class T>
+template <class T>
 int Linked_List<T>::len ()
 {
     return length;
@@ -294,52 +373,56 @@ int Linked_List<T>::len ()
 /*
     Example of using our object in function
 */
-template<class T>
-void next(Linked_List<T> &object) {
+
+template <class T>
+void next (Linked_List<T> &object) {
     object.push("string from next");
 }
-template<class T>
-void init(Linked_List<T> &object) {
+template <class T>
+void init (Linked_List<T> &object) {
     object.push("string from init");
     next(object);
 }
 
-// main
 int main(int argc, const char * argv[]) {
     // insert code here...
     Linked_List<int> a; // Integers
     a.push(10);
-    a.push(20);
+    a.push(40);
     a.push(30);
     a.unshift(11);
     a.insert(3, 15);
     a.edit(1, 99);
     a.remove(2);
+    a.push(47);
     a.shift();
-    a.sortNegative();
+    a.sort();
     a.display();
     printf("len: %d\n", a.len());
     a.deleteList();
     a.display();
     printf("len: %d\n\n", a.len());
+    
     double E[] = { 3.6, 5.4, 7.2, 10.10, 15.2, 12.19 };
     Linked_List<double> b(E, 6); // Doubles
     b.push(14);
     b.push(18);
-    b.sortPositive();
+    b.sortB();
     b.display();
     printf("\n");
     printf("len: %d\n\n", b.len());
+    
     char F[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
     Linked_List<char> c(F, 6); // Chars
     c.pop();
+    c.reverse();
     c.display();
     printf("len: %d\n\n", c.len());
     std::string G[] = { "hello", "there", "from", "linked", "list", "of", "strings" };
+    
     Linked_List<std::string> d(G, 7); // Strings
     d.push("new string");
     init(d);
     d.display();
     return 0;
 }
-
