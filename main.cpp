@@ -25,6 +25,7 @@ class Linked_List
             head = NULL;
             tail = NULL;
             temp = NULL;
+            return;
         }
         Linked_List(T A[], int n)
         {
@@ -48,6 +49,7 @@ class Linked_List
         {
             deleteList();
             length = NULL;
+            return;
         }
         
         void push (T n); // add element at the end of linked list
@@ -60,18 +62,27 @@ class Linked_List
         void shift (); // remove element at the beginning of linked list
         void remove (int i); // remove element at certain index
         
-        void deleteList(); // delete whole linked list
-        
-        void swap(struct Node *p, struct Node *q); // swap elements of linked list
-        void sortB(); // bubble sort
-        
-        void sort(); // the main wrapper for merge sort
-        void MergeSort(Node** headRef);
-        void FrontBackSplit(Node* source, Node** frontRef, Node** backRef);
-        struct Node* SortedMerge(Node* a, Node* b);
-        
+        /* merge sort */
+        void MergeSort (Node** headRef);
+        void FrontBackSplit (Node* source, Node** frontRef, Node** backRef);
+        struct Node* SortedMerge (Node* a, Node* b);
+        /* merge sort */
+    
+        void sort (); // the main wrapper for merge sort
         void reverse (); // reverse a linked list
+        void rotate (int n); // rotate a linked list
+    
+        void swap (int p, int q); // swap elements of linked list
+        //void shuffle ();
+    
+        /* Extra function bubble sort */
+        void swapB (struct Node *p, struct Node *q);
+        void sortB (); // the main wrapper for bubble sort
+    
         void display (); // show all elements of list
+    
+        void deleteList (); // delete whole linked list
+    
         int len (); // return length of list
         
 };
@@ -88,7 +99,6 @@ void Linked_List<T>::push (T n)
     }
     else
     {
-        tail = new struct Node;
         tail = head;
         while (tail->next != NULL)
         {
@@ -219,48 +229,6 @@ void Linked_List<T>::remove (int i)
     return;
 }
 template <class T>
-void Linked_List<T>::deleteList()
-{
-    tail = head;
-    while (tail != NULL)
-    {
-        temp = tail->next;
-        delete tail;
-        tail = temp;
-        length--;
-    }
-    head = NULL;
-    tail = NULL;
-    temp = NULL;
-}
-template <class T>
-void Linked_List<T>::swap (struct Node *p, struct Node *q)
-{
-    T temp = p->data;
-    p->data = q -> data;
-    q -> data = temp;
-}
-template <class T>
-void Linked_List<T>::sortB ()
-{
-    bool swapped;
-    tail = NULL;
-    
-    do {
-        swapped = false;
-        tail = head;
-        while(tail->next != NULL)
-        {
-            if (tail->data > tail->next->data)
-            {
-                swap(tail, tail->next);
-                swapped = true;
-            }
-            tail = tail->next;
-        }
-    } while(swapped);
-}
-template <class T>
 void Linked_List<T>::sort ()
 {
     MergeSort(&head);
@@ -348,6 +316,126 @@ void Linked_List<T>::reverse ()
     return;
 }
 template <class T>
+void Linked_List<T>::rotate(int k)
+{
+    if (k == 0)
+        return;
+        
+    tail = head;
+
+    int count = 1;
+    while (count < k && tail != NULL)
+    {
+        tail = tail->next;
+        count++;
+    }
+
+    if (tail == NULL)
+        return;
+
+    temp = tail;
+
+    while (tail->next != NULL)
+        tail = tail->next;
+
+    tail->next = head;
+
+    head = temp->next;
+
+    temp->next = NULL;
+}
+template <class T>
+void Linked_List<T>::swap (int p, int q)
+{
+    
+    if (head == NULL || p == q)
+        return;
+    if (p < 0 || p > (len() - 1) || q < 0 || q > (len() - 1))
+        return;
+    
+    tail = head;
+    for (int i = 0; i < p; i++)
+    {
+        tail = tail->next;
+    }
+    T temp_one = tail->data;
+    
+    tail = head;
+    for (int i = 0; i < q; i++)
+    {
+        tail = tail->next;
+    }
+    T temp_two = tail->data;
+    tail->data = temp_one;
+    
+    tail = head;
+    for (int i = 0; i < p; i++)
+    {
+        tail = tail->next;
+    }
+    tail->data = temp_two;
+}
+/*template <class T>
+void Linked_List<T>::shuffle ()
+{
+    tail = head;
+    Linked_List<T> new_list;
+    // 0 1 2 -> len = 3
+    for (int i = 0; i < len(); i++)
+    {
+        int random_number = rand() % len();
+        for (int j = 0; j < random_number; j++)
+            tail = tail->next;
+        T temp_val = tail->next->data;
+        struct Node* temp_node = tail->next->next;
+        
+        temp = tail->next;
+        delete temp;
+        temp = NULL;
+        
+        tail->next = temp_node;
+        new_list.push(temp_val);
+        
+        temp_node = NULL;
+        temp_val = NULL;
+    }
+    
+    tail = head;
+    while (tail != NULL) {
+        tail->data = 1;
+        tail = tail->next;
+    }
+    new_list.deleteList();
+    
+}*/
+template <class T>
+void Linked_List<T>::swapB (struct Node *p, struct Node *q)
+{
+    T temp = p->data;
+    p->data = q->data;
+    q->data = temp;
+}
+template <class T>
+void Linked_List<T>::sortB ()
+{
+    bool swapped;
+    tail = NULL;
+    
+    do {
+        swapped = false;
+        tail = head;
+        while(tail->next != NULL)
+        {
+            if (tail->data > tail->next->data)
+            {
+                swapB(tail, tail->next);
+                swapped = true;
+            }
+            tail = tail->next;
+        }
+    } while(swapped);
+}
+template <class T>
 void Linked_List<T>::display ()
 {
     if (head != NULL)
@@ -365,6 +453,21 @@ void Linked_List<T>::display ()
     return;
 }
 template <class T>
+void Linked_List<T>::deleteList()
+{
+    tail = head;
+    while (tail != NULL)
+    {
+        temp = tail->next;
+        delete tail;
+        tail = temp;
+        length--;
+    }
+    head = NULL;
+    tail = NULL;
+    temp = NULL;
+}
+template <class T>
 int Linked_List<T>::len ()
 {
     return length;
@@ -375,17 +478,19 @@ int Linked_List<T>::len ()
 */
 
 template <class T>
-void next (Linked_List<T> &object) {
-    object.push("string from next");
+void next (Linked_List<T> &list) {
+    list.push("string from next");
 }
 template <class T>
-void init (Linked_List<T> &object) {
-    object.push("string from init");
-    next(object);
+void init (Linked_List<T> &list) {
+    list.push("string from init");
+    next(list);
 }
 
 int main(int argc, const char * argv[]) {
     // insert code here...
+    srand(static_cast<unsigned int>(time(nullptr))); // needed for shuffle function
+    
     Linked_List<int> a; // Integers
     a.push(10);
     a.push(40);
@@ -396,7 +501,12 @@ int main(int argc, const char * argv[]) {
     a.remove(2);
     a.push(47);
     a.shift();
+    std::cout << "Sorted: " << std::endl;
     a.sort();
+    a.display();
+    std::cout << "Rotated: " << std::endl;
+    a.rotate(2);
+    a.swap(0, 2);
     a.display();
     printf("len: %d\n", a.len());
     a.deleteList();
